@@ -43,4 +43,8 @@ pip install -r requirements.txt
 1. Navigate to the folder named "app" in the repository.
 2. Run the following command:
 
-uvicorn main:app --reload
+uvicorn main:app --host 0.0.0.0 --port 8080 --reload
+
+### Running the Tests
+
+Navigate to the project root directory meduzzen-internship/ and execute the command pytest
