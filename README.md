@@ -43,7 +43,7 @@ pip install -r requirements.txt
 
  Run the following command:
 
-uvicorn app.main:app
+python3 -m app.main
 
 
 ### Running the Tests
