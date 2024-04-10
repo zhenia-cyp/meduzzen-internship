@@ -43,7 +43,7 @@ pip install -r requirements.txt
 
  Run the following command:
 
-uvicorn app.main:app --reload --env-file .env
+uvicorn app.main:app
 
 
 ### Running the Tests
