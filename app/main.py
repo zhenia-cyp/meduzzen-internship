@@ -1,15 +1,12 @@
 from fastapi import FastAPI
 import uvicorn
-from routers.health_check import router
-import os
-
+from app.routers.health_check import router
+from app.core.config import Settings
 
 app = FastAPI()
 app.include_router(router)
 
-host = os.getenv("HOST")
-port = os.getenv("PORT")
-debug = os.getenv("DEBUG")
+settings = Settings()
 
 if __name__ == "__main__":
-    uvicorn.run(app, host=host, port=port)
+    uvicorn.run(app, host=settings.HOST, port=settings.PORT)

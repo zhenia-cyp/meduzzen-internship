@@ -40,10 +40,10 @@ pip install -r requirements.txt
 
 ### Running the Application
 
-1. Navigate to the folder named "app" in the repository.
-2. Run the following command:
 
-uvicorn main:app --host 0.0.0.0 --port 8080 --reload
+ Run the following command:
+
+uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
 
 ### Running the Tests
 

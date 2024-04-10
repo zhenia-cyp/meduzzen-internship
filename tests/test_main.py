@@ -1,16 +1,15 @@
-import unittest
-from fastapi.testclient import TestClient
-from app.routers.health_check import router
+import pytest
+from httpx import AsyncClient
+from app.main import app
 
-class TestHealthCheck(unittest.TestCase):
-    def setUp(self):
-        self.client = TestClient(router)
 
-    def test_health_check(self):
-        response = self.client.get("/")
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), {
-            "status_code": 200,
-            "detail": "ok",
-            "result": "working"
-        })
+@pytest.mark.anyio
+async def test_root():
+    async with AsyncClient(app=app, base_url="http://test") as ac:
+        response = await ac.get("/")
+    assert response.status_code == 200
+    assert response.json() == {
+      "status_code": 200,
+      "detail": "ok",
+      "result": "working"
+      }
