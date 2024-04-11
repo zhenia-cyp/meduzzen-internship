@@ -5,10 +5,10 @@ class Settings(BaseSettings):
     """
     Environment settings for the application.
     """
-    HOST: str = os.getenv("HOST", "localhost")
-    PORT: int = os.getenv("PORT", 8000)
-    DEBUG: bool = os.getenv("DEBUG", True)
-    RELOAD: bool = os.getenv("RELOAD", True)
+    HOST: str = "localhost"
+    PORT: int = 8000
+    DEBUG: bool = True
+    RELOAD: bool = True
 
     class Config:
         env_file = ".env"
