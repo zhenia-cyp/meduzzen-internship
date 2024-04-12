@@ -43,9 +43,27 @@ pip install -r requirements.txt
 
  Run the following command:
 
-python3 -m app.main
+ python3 -m app.main
 
 
 ### Running the Tests
 
-Navigate to the project root directory meduzzen-internship/ and execute the command pytest
+Navigate to the project root directory meduzzen-internship/ and execute the command:
+ 
+ pytest
+
+### Running the application using Docker 
+ 
+ sudo docker-compose up --build
+ 
+### Running the tests using Docker
+
+ sudo docker-compose run test
+ 
+ 
+ 
+ 
+ 
+ 
+
+
