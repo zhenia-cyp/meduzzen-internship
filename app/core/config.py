@@ -1,4 +1,3 @@
-from typing import ClassVar
 from pydantic_settings import BaseSettings
 import os
 
@@ -11,25 +10,25 @@ class Settings(BaseSettings):
     DEBUG: bool = True
     RELOAD: bool = True
 
-    POSTGRES_USER: str = os.getenv("POSTGRES_USER", "")
-    POSTGRES_PASSWORD: str = os.getenv("POSTGRES_PASSWORD", "")
-    POSTGRES_DB: str = os.getenv("POSTGRES_DB", "")
-    POSTGRES_HOST: str = os.getenv("POSTGRES_HOST", "")
-    POSTGRES_PORT: int = int(os.getenv("POSTGRES_PORT", "5432"))
+    POSTGRES_USER: str
+    POSTGRES_PASSWORD: str
+    POSTGRES_DB: str
+    POSTGRES_HOST: str
+    POSTGRES_PORT: int
 
-    REDIS_URL: str = os.getenv("REDIS_URL", "")
-    REDIS_PORT: str = os.getenv("REDIS_PORT", "")
+    REDIS_URL: str
+    REDIS_PORT: str
 
-    DATABASE_URL: ClassVar[
-        str] = f"postgresql+asyncpg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
+    @property
+    def DATABASE_URL(self) -> str:
+        return f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+
+    @property
+    def REDIS_URL(self) -> str:
+        return f"redis://{self.REDIS_URL}:{self.REDIS_PORT}"
 
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
-        model_config = {
-            'ignored_types': [
-                'DATABASE_URL',
-            ]
-        }
 
 settings = Settings()
