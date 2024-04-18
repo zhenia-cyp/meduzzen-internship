@@ -16,7 +16,6 @@ class Settings(BaseSettings):
     POSTGRES_HOST: str
     POSTGRES_PORT: int
 
-    REDIS_URL: str
     REDIS_PORT: str
 
     @property
@@ -25,7 +24,7 @@ class Settings(BaseSettings):
 
     @property
     def REDIS_URL(self) -> str:
-        return f"{self.REDIS_URL}{self.HOST}:{self.REDIS_PORT}"
+        return f"redis://{self.HOST}:{self.REDIS_PORT}"
 
     class Config:
         env_file = ".env"
