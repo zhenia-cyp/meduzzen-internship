@@ -25,7 +25,7 @@ class Settings(BaseSettings):
 
     @property
     def REDIS_URL(self) -> str:
-        return f"redis://{self.REDIS_URL}:{self.REDIS_PORT}"
+        return f"{self.REDIS_URL}{self.HOST}:{self.REDIS_PORT}"
 
     class Config:
         env_file = ".env"
