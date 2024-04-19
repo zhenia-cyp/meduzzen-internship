@@ -60,7 +60,7 @@ Navigate to the project root directory meduzzen-internship/ and execute the comm
 
  sudo docker-compose run test
  
-### Running the Alembic using using Docker 
+### Running the Alembic using Docker 
 sudo docker-compose up -d --build
 
 Create version:
