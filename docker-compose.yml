@@ -38,6 +38,7 @@ services:
       - .env
     volumes:
       - .:/app
+
   test:
     build: .
     command: pytest
