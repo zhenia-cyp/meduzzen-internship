@@ -1,9 +1,10 @@
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Column, Integer, String, Boolean, MetaData
 from sqlalchemy.orm import declarative_base
-from sqlalchemy import MetaData
+
 
 Base = declarative_base()
 metadata = MetaData()
+
 
 class User(Base):
     __tablename__ = "User"
@@ -18,4 +19,7 @@ class User(Base):
     is_superuser: bool = Column(Boolean, default=False)
 
     def __str__(self):
-       return f"{self.email} {self.firstname} {self.lastname} {self.hashed_password}"
+        return f"User: id: {self.id}, name: {self.firstname} {self.lastname}"
+
+    def __repr__(self):
+        return f"User: id: {self.id}, name: {self.firstname} {self.lastname}"
