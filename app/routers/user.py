@@ -3,7 +3,10 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.database import get_async_session
 from app.services.user import UserService
+from app.schemas.pagination import PagedResponseSchema, PageParams
 from app.schemas.schema import UserSignUpRequest, UserSchema,UserUpdateRequest,MyResponse
+from fastapi import HTTPException
+
 
 router = APIRouter()
 
@@ -11,14 +14,17 @@ router = APIRouter()
 @router.post("/register/", response_model=UserSchema)
 async def add_user(user: UserSignUpRequest, session: AsyncSession = Depends(get_async_session)):
     user_service = UserService(session)
+    email = await user_service.check_user_email(user)
+    if email:
+         raise HTTPException(status_code=400, detail="User with this email already exists")
     user = await user_service.add_user(user)
     return user
 
 
-@router.get("/users/", response_model=List[UserSchema])
-async def all_users(session: AsyncSession = Depends(get_async_session)):
+@router.get("/users/", response_model=PagedResponseSchema[UserSchema])
+async def all_users(session: AsyncSession = Depends(get_async_session), page_params: PageParams = Depends(PageParams)):
     user_service = UserService(session)
-    users = await user_service.get_all_users()
+    users = await user_service.get_all_users(page_params)
     return users
 
 

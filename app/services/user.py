@@ -3,6 +3,7 @@ from fastapi import HTTPException
 from sqlalchemy import select, update, delete
 from sqlalchemy.exc import SQLAlchemyError
 from app.models.model import User
+from app.schemas.pagination import PageParams, PagedResponseSchema
 from app.schemas.schema import UserSignUpRequest, UserSchema, UserUpdateRequest
 from app.utils.utils import get_hash_password
 import logging
@@ -15,26 +16,28 @@ class UserService:
         self.logger = logging.getLogger(__name__)
 
     async def add_user(self, user: UserSignUpRequest) -> UserSchema:
-        stmt = select(User).where(User.email == user.email)
-        result = await self.session.execute(stmt)
-        exist = result.scalars().all()
-        if exist:
-             raise HTTPException(status_code=400, detail="User with this email already exists")
-        hashed_password = get_hash_password(user.password)
-        data = user.dict(exclude={"password"})
-        data["hashed_password"] = hashed_password
-        new_user = User(**data)
-        self.session.add(new_user)
-        await self.session.commit()
-        await self.session.refresh(new_user)
-        return UserSchema.from_orm(new_user)
+            hashed_password = get_hash_password(user.password)
+            data = user.dict(exclude={"password"})
+            data["hashed_password"] = hashed_password
+            new_user = User(**data)
+            self.session.add(new_user)
+            await self.session.commit()
+            await self.session.refresh(new_user)
+            return UserSchema.from_orm(new_user)
 
-    async def get_all_users(self) -> List[UserSchema]:
-        stmt = select(User)
+    async def get_all_users(self, page_params: PageParams):
+        page = page_params.page - 1
+        offset = page * page_params.size
+        limit = page_params.size
+        stmt = select(User).offset(offset).limit(limit)
         result = await self.session.execute(stmt)
         users = result.scalars().all()
-        return [UserSchema.from_orm(user) for user in users]
-
+        return PagedResponseSchema(
+            total=len(users),
+            page=page_params.page,
+            size=page_params.size,
+            results=[UserSchema.from_orm(user) for user in users]
+        )
 
     async def get_user_by_id(self, user_id: int)-> Optional[UserSchema] :
                 try:
@@ -45,6 +48,7 @@ class UserService:
                 except SQLAlchemyError as e:
                     self.logger.error(f"get user by id: {str(e)}")
                     return None
+
 
     async def update_user(self,user_id: int, user: UserUpdateRequest):
         data = user.dict(exclude={'updated_at'})
@@ -65,6 +69,17 @@ class UserService:
             await self.session.execute(stmt)
             await self.session.commit()
             return True
+
+    async def check_user_email(self,user:UserSignUpRequest):
+        stmt = select(User).where(User.email == user.email)
+        result = await self.session.execute(stmt)
+        exist = result.scalars().all()
+        if exist:
+            return True
+        return False
+
+
+
 
 
 
