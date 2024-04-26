@@ -1,16 +1,22 @@
-from pydantic import BaseModel, field_validator
-from typing import Optional
+from pydantic import BaseModel
+from typing import Optional, Any, Generic, TypeVar
 import datetime
+
+
+
+DataT = TypeVar('DataT')
 
 class UserSchema(BaseModel):
     id: int
     email: str
-    hashed_password: str
     firstname: str
     lastname: str
     description: Optional[str] = None
     is_active: bool = True
     is_superuser: Optional[bool] = False
+
+    class Config:
+        from_attributes = True
 
 
 class UserSignInRequest(BaseModel):
@@ -22,30 +28,25 @@ class UserSignUpRequest(BaseModel):
     email: str
     firstname: str
     lastname: str
-    hashed_password: str
+    password: str
     description: Optional[str] = None
     is_active: bool = True
     is_superuser: Optional[bool] = False
 
-    @field_validator('hashed_password')
-    def password_validation(cls, hashed_password):
-        if len(hashed_password) < 7:
-            raise ValueError('Password must be at least 7 characters long')
-
-        if not hashed_password:
-            raise ValueError('Password cannot be blank')
-
 
 
 class UserUpdateRequest(BaseModel):
-    user_email: str
-    user_firstname: str
-    user_lastname: str
+    email: str
+    firstname: str
+    lastname: str
     hashed_password: str
     description: Optional[str] = None
     is_active: bool = True
     is_superuser: Optional[bool] = False
     updated_at: Optional[datetime.datetime] = None
+
+    class Config:
+        from_attributes = True
 
 
 class UserDetailResponse(BaseModel):
@@ -54,7 +55,13 @@ class UserDetailResponse(BaseModel):
 
 
 class UsersListResponse(BaseModel):
-    user_firstname: str
-    user_lastname: str
+    firstname: str
+    lastname: str
+
+
+class MyResponse(BaseModel, Generic[DataT]):
+    status_code: str
+    result: Any
+
 
 
