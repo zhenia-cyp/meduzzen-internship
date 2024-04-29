@@ -23,6 +23,9 @@ class UserSignInRequest(BaseModel):
     email: str
     hashed_password: str
 
+    class Config:
+        from_attributes = True
+
 
 class UserSignUpRequest(BaseModel):
     email: str
@@ -32,6 +35,10 @@ class UserSignUpRequest(BaseModel):
     description: Optional[str] = None
     is_active: bool = True
     is_superuser: Optional[bool] = False
+
+    class Config:
+        from_attributes = True
+
 
 
 

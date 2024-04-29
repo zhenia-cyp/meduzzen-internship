@@ -10,8 +10,7 @@ class PageParams(BaseModel):
 
 
 class PagedResponseSchema(BaseModel, Generic[T]):
-    """Response schema for any paged API."""
     total: int
     page: int
     size: int
-    results: List[T]
+    result: List[T]

@@ -10,6 +10,9 @@ class Settings(BaseSettings):
     DEBUG: bool = True
     RELOAD: bool = True
 
+    ALGORITHM: str
+    JWT_SECRET_KEY: str
+
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
     POSTGRES_DB: str
