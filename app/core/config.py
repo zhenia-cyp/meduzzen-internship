@@ -12,6 +12,11 @@ class Settings(BaseSettings):
 
     ALGORITHM: str
     JWT_SECRET_KEY: str
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+
+    ALGORITHM_RS: str
+    DOMAIN: str
+    AUDIENCE: str
 
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str

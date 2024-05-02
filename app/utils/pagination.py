@@ -11,6 +11,8 @@ class Pagination:
         self.page = page_params.page - 1
         self.offset = self.page * page_params.size
         self.limit = page_params.size
+
+
     async def get_pagination(self ) -> PagedResponseSchema:
         stmt = select(self.model).offset(self.offset).limit(self.limit)
         result = await self.session.execute(stmt)

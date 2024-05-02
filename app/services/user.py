@@ -8,6 +8,7 @@ from app.utils.pagination import Pagination
 from app.utils.utils import get_hash_password
 import logging
 from datetime import datetime
+from sqlalchemy.orm.exc import NoResultFound
 
 
 class UserService:
@@ -69,13 +70,15 @@ class UserService:
             return True
         return False
 
-    async def get_user_by_email(self,email):
+
+    async def get_user_by_email(self, email):
         stmt = select(User).where(User.email == email)
-        result = await self.session.execute(stmt)
-        current_user = result.scalar_one()
-        if current_user:
+        try:
+            result = await self.session.execute(stmt)
+            current_user = result.scalar_one()
             return UserSignInRequest.from_orm(current_user)
-        return None
+        except NoResultFound:
+            return None
 
 
 

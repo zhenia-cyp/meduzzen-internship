@@ -11,5 +11,6 @@ pydantic==2.6.4
 pydantic-settings==2.2.1
 passlib==1.7.4
 PyJWT==2.8.0
-
+cryptography==42.0.5
+trio==0.25.0
 

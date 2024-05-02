@@ -37,12 +37,11 @@ async def login(user: UserSignInRequest,session: AsyncSession = Depends(get_asyn
     return MyResponse(status_code='200',message="ОК",result=access_data)
 
 
-@router.get("/me", response_model=UserSignInRequest)
+@router.get("/me/", response_model=UserSignInRequest)
 async def get_me(token: str = Depends(token_auth_scheme),session: AsyncSession = Depends(get_async_session)):
     auth_service = AuthService(session)
-    user = await auth_service.get_user_by_token(token)
+    user = await auth_service.get_user_by_token(token,session)
     return user
-
 
 
 @router.get("/users/", response_model=PagedResponseSchema[UserSchema])

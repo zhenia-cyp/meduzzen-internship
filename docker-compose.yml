@@ -37,9 +37,9 @@ services:
       - .env
     volumes:
       - .:/app
-#  test:
-#    build: .
-#    command: pytest
+  test:
+    build: .
+    command: pytest
 
 volumes:
     postgres-data:
