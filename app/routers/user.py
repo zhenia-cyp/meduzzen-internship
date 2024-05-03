@@ -5,7 +5,8 @@ from app.schemas.authentication import Token
 from app.services.authentication import AuthService
 from app.services.user import UserService
 from app.schemas.pagination import PagedResponseSchema, PageParams
-from app.schemas.schema import UserSignUpRequest, UserSchema, UserUpdateRequest, MyResponse, UserSignInRequest
+from app.schemas.schema import UserSignUpRequest, UserSchema, UserUpdateRequest, MyResponse, UserSignInRequest, \
+    UserDetails
 from fastapi import HTTPException
 from fastapi.security import HTTPBearer
 
@@ -29,15 +30,15 @@ async def login(user: UserSignInRequest,session: AsyncSession = Depends(get_asyn
     user_service = UserService(session)
     current_user = await user_service.get_user_by_email(user.email)
     if current_user is None:
-        raise HTTPException(status_code=400, detail="Incorrect email")
+        raise HTTPException(status_code=401, detail="Unauthorized")
     auth_service = AuthService(session)
     access_data = await auth_service.authenticate_user(user, current_user)
     if access_data is False:
-         raise HTTPException(status_code=400,detail="Incorrect password")
+         raise HTTPException(status_code=400,detail="Unauthorized")
     return MyResponse(status_code='200',message="ОК",result=access_data)
 
 
-@router.get("/me/", response_model=UserSignInRequest)
+@router.get("/me/", response_model=UserDetails)
 async def get_me(token: str = Depends(token_auth_scheme),session: AsyncSession = Depends(get_async_session)):
     auth_service = AuthService(session)
     user = await auth_service.get_user_by_token(token,session)

@@ -20,9 +20,9 @@ async def payload(token, session):
         raise TokenExpiredException()
     email = payload.get("sub")
     if email is None:
-        return CredentialsException()
+        raise CredentialsException()
     user_service = UserService(session)
     user = await user_service.get_user_by_email(email)
     if user is None:
-        return CredentialsException()
+        raise CredentialsException()
     return user

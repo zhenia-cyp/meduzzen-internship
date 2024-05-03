@@ -41,7 +41,6 @@ class UserSignUpRequest(BaseModel):
 
 
 
-
 class UserUpdateRequest(BaseModel):
     email: str
     firstname: str
@@ -70,5 +69,11 @@ class MyResponse(BaseModel, Generic[DataT]):
     status_code: str
     result: Any
 
+
+class UserDetails(BaseModel):
+    email: str
+
+    class Config:
+        from_attributes = True
 
 

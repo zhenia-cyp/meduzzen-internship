@@ -14,7 +14,7 @@ async def payload_auth(token, session):
     payload = jwt.decode(token, signing_key, algorithms=[settings.ALGORITHM_RS], audience=settings.AUDIENCE)
     email = payload.get("email")
     if email is None:
-        return CredentialsException()
+        raise CredentialsException()
     user_service = UserService(session)
     user = await user_service.get_user_by_email(email)
     if user is None:
