@@ -77,3 +77,13 @@ class UserDetails(BaseModel):
         from_attributes = True
 
 
+class UpdateUser(BaseModel):
+    firstname: str
+    hashed_password: str
+    updated_at: Optional[datetime.datetime] = None
+
+    class Config:
+        from_attributes = True
+
+
+

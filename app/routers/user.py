@@ -6,7 +6,7 @@ from app.services.authentication import AuthService
 from app.services.user import UserService
 from app.schemas.pagination import PagedResponseSchema, PageParams
 from app.schemas.schema import UserSignUpRequest, UserSchema, UserUpdateRequest, MyResponse, UserSignInRequest, \
-    UserDetails
+    UserDetails, UpdateUser
 from fastapi import HTTPException
 from fastapi.security import HTTPBearer
 
@@ -66,8 +66,19 @@ async def update_user(user_id: int, user: UserUpdateRequest, session: AsyncSessi
     return MyResponse(status_code="200",message="updated user",result=user)
 
 
+@router.patch("/update/user/", response_model=UserUpdateRequest)
+async def partially_user_update(update_user: UserUpdateRequest, token: str = Depends(token_auth_scheme), session: AsyncSession = Depends(get_async_session)):
+    auth_service = AuthService(session)
+    user = await auth_service.get_user_by_token(token, session)
+    user_service = UserService(session)
+    user = await user_service.partially_user_update(user,update_user)
+    return user
+
+
 @router.delete("/user/delete/{user_id}/", response_model=MyResponse[int])
-async def delete_user(user_id: int, session: AsyncSession = Depends(get_async_session)):
+async def delete_user(user_id: int, session: AsyncSession = Depends(get_async_session), token: str = Depends(token_auth_scheme)):
+     auth_service = AuthService(session)
+     user = await auth_service.get_user_by_token(token, session)
      user_service = UserService(session)
-     user = await user_service.delete_user(user_id)
-     return MyResponse(status_code="200",message="Delete user",result=user)
+     result = await user_service.delete_user(user_id, user)
+     return MyResponse(status_code="200",message="Delete user",result=result)
