@@ -1,13 +1,14 @@
 from typing import List, Optional
-from fastapi import HTTPException
 from sqlalchemy import select, update, delete
 from sqlalchemy.exc import SQLAlchemyError
 from app.models.model import User
 from app.schemas.pagination import PageParams, PagedResponseSchema
-from app.schemas.schema import UserSignUpRequest, UserSchema, UserUpdateRequest
+from app.schemas.schema import UserSignUpRequest, UserSchema, UserUpdateRequest, UserSignInRequest
+from app.utils.pagination import Pagination
 from app.utils.utils import get_hash_password
 import logging
 from datetime import datetime
+from sqlalchemy.orm.exc import NoResultFound
 
 
 class UserService:
@@ -25,19 +26,10 @@ class UserService:
             await self.session.refresh(new_user)
             return UserSchema.from_orm(new_user)
 
-    async def get_all_users(self, page_params: PageParams):
-        page = page_params.page - 1
-        offset = page * page_params.size
-        limit = page_params.size
-        stmt = select(User).offset(offset).limit(limit)
-        result = await self.session.execute(stmt)
-        users = result.scalars().all()
-        return PagedResponseSchema(
-            total=len(users),
-            page=page_params.page,
-            size=page_params.size,
-            results=[UserSchema.from_orm(user) for user in users]
-        )
+
+    async def get_all_users(self, page_params: PageParams) -> PagedResponseSchema:
+        pagination = Pagination(User, self.session,page_params)
+        return await pagination.get_pagination()
 
     async def get_user_by_id(self, user_id: int)-> Optional[UserSchema] :
                 try:
@@ -53,7 +45,7 @@ class UserService:
     async def update_user(self,user_id: int, user: UserUpdateRequest):
         data = user.dict(exclude={'updated_at'})
         if data.get("hashed_password"):
-            hashed_password = get_hash_password(data["hashed_password"].lower())
+            hashed_password = get_hash_password(data["hashed_password"])
             data["hashed_password"] = hashed_password
         current_user = await self.session.get(User, user_id)
         for key, value in data.items():
@@ -77,6 +69,16 @@ class UserService:
         if exist:
             return True
         return False
+
+
+    async def get_user_by_email(self, email):
+        stmt = select(User).where(User.email == email)
+        try:
+            result = await self.session.execute(stmt)
+            current_user = result.scalar_one()
+            return UserSignInRequest.from_orm(current_user)
+        except NoResultFound:
+            return None
 
 
 

@@ -10,6 +10,14 @@ class Settings(BaseSettings):
     DEBUG: bool = True
     RELOAD: bool = True
 
+    ALGORITHM: str
+    JWT_SECRET_KEY: str
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+
+    ALGORITHM_RS: str
+    DOMAIN: str
+    AUDIENCE: str
+
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
     POSTGRES_DB: str
