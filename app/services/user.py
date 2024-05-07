@@ -3,7 +3,8 @@ from sqlalchemy import select, update, delete
 from sqlalchemy.exc import SQLAlchemyError
 from app.models.model import User
 from app.schemas.pagination import PageParams, PagedResponseSchema
-from app.schemas.schema import UserSignUpRequest, UserSchema, UserUpdateRequest, UserSignInRequest
+from app.schemas.schema import UserSignUpRequest, UserSchema, UserUpdateRequest, UserSignInRequest, UserDetails
+from app.utils.exceptions import EmailUpdateNotAllowed, UserNotFoundException
 from app.utils.pagination import Pagination
 from app.utils.utils import get_hash_password
 import logging
@@ -56,8 +57,11 @@ class UserService:
         return UserUpdateRequest.from_orm(current_user)
 
 
-    async def delete_user(self, id: int):
+    async def delete_user(self, id: int, user: UserDetails):
             stmt = delete(User).filter_by(id=id)
+            current_user = await self.get_user_by_email(user.email)
+            if id != current_user.id:
+                raise UserNotFoundException()
             await self.session.execute(stmt)
             await self.session.commit()
             return True
@@ -76,10 +80,21 @@ class UserService:
         try:
             result = await self.session.execute(stmt)
             current_user = result.scalar_one()
-            return UserSignInRequest.from_orm(current_user)
+            return current_user
         except NoResultFound:
             return None
 
+
+    async def partially_user_update(self, user,update):
+        data = update.dict(exclude={'updated_at'})
+        current_user = await self.get_user_by_email(user.email)
+        current_user.firstname = data['firstname']
+        current_user.hashed_password = get_hash_password(data["hashed_password"])
+        current_user.updated_at = datetime.utcnow()
+        # current_user.email='aabl@gmail.com'
+        await self.session.commit()
+        await self.session.refresh(current_user)
+        return UserUpdateRequest.from_orm(current_user)
 
 
 
