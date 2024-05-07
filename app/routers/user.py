@@ -82,3 +82,5 @@ async def delete_user(user_id: int, session: AsyncSession = Depends(get_async_se
      user_service = UserService(session)
      result = await user_service.delete_user(user_id, user)
      return MyResponse(status_code="200",message="Delete user",result=result)
+
+

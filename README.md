@@ -67,7 +67,6 @@ Create version:
 sudo docker-compose exec web alembic revision -m "Your text about version" --autogenerate
 
 Run migration:
-
 sudo docker-compose exec web alembic upgrade head
 
  
