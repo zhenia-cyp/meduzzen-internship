@@ -4,7 +4,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from app.models.model import User
 from app.schemas.pagination import PageParams, PagedResponseSchema
 from app.schemas.schema import UserSignUpRequest, UserSchema, UserUpdateRequest, UserSignInRequest, UserDetails
-from app.utils.exceptions import EmailUpdateNotAllowed, UserNotFoundException
+from app.utils.exceptions import EmailUpdateNotAllowed, NotFoundException
 from app.utils.pagination import Pagination
 from app.utils.utils import get_hash_password
 import logging
@@ -31,6 +31,7 @@ class UserService:
     async def get_all_users(self, page_params: PageParams) -> PagedResponseSchema:
         pagination = Pagination(User, self.session,page_params)
         return await pagination.get_pagination()
+
 
     async def get_user_by_id(self, user_id: int)-> Optional[UserSchema] :
                 try:
@@ -61,7 +62,7 @@ class UserService:
             stmt = delete(User).filter_by(id=id)
             current_user = await self.get_user_by_email(user.email)
             if id != current_user.id:
-                raise UserNotFoundException()
+                raise NotFoundException()
             await self.session.execute(stmt)
             await self.session.commit()
             return True
@@ -91,7 +92,6 @@ class UserService:
         current_user.firstname = data['firstname']
         current_user.hashed_password = get_hash_password(data["hashed_password"])
         current_user.updated_at = datetime.utcnow()
-        # current_user.email='aabl@gmail.com'
         await self.session.commit()
         await self.session.refresh(current_user)
         return UserUpdateRequest.from_orm(current_user)
