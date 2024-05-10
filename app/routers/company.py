@@ -7,7 +7,6 @@ from app.schemas.schema import MyResponse
 from app.services.authentication import AuthService
 from app.services.company import CompanyService
 from fastapi.security import HTTPBearer
-
 from app.utils.exceptions import NotFoundException
 
 router = APIRouter()

@@ -21,7 +21,6 @@ class CompanyService:
                     stmt = select(Company).filter_by(id=company_id)
                     result = await self.session.execute(stmt)
                     company = result.scalar_one()
-                    print('company',company)
                     return company
                 except SQLAlchemyError as e:
                     self.logger.error(f"get company by id: {str(e)}")
