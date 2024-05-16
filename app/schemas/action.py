@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from typing import Union
-from enum import Enum
+from enum import StrEnum
+
 
 class InvitationSchema(BaseModel):
     id: int
@@ -13,13 +14,13 @@ class InvitationSchema(BaseModel):
         from_attributes = True
 
 
-class OwnerActions(str, Enum):
+class OwnerActions(StrEnum):
     Send_invitation = "Send_invitation"
     Cancel_invitation = "Cancel_invitation"
+    Send_request = "Send_request"
     Accept_request = "Accept_request"
-
-    class Config:
-        from_attributes = True
+    Deny_request = "Deny_request"
+    Delete_member = "Delete_member"
 
 
 class OwnerActionCreate(BaseModel):
@@ -31,13 +32,12 @@ class OwnerActionCreate(BaseModel):
         from_attributes = True
 
 
-class UserActions(str, Enum):
+class UserActions(StrEnum):
     Accept_invitation = "Accept_invitation"
     Deny_invitation = "Deny_invitation"
     Send_request = "Send_request"
-
-    class Config:
-      from_attributes = True
+    Deny_request = "Deny_request"
+    Leave_company= "Leave_company"
 
 
 class UserActionCreate(BaseModel):
@@ -48,7 +48,6 @@ class UserActionCreate(BaseModel):
         from_attributes = True
 
 
-
 class RequestSchema(BaseModel):
     id: int
     sender_id: int
@@ -56,6 +55,15 @@ class RequestSchema(BaseModel):
     is_accepted:  Union[bool, None]
 
     class Config:
-      from_attributes = True
+        from_attributes = True
 
+
+class MemberSchema(BaseModel):
+    id: int
+    user_id: int
+    role: str
+    company_id: int
+
+    class Config:
+        from_attributes = True
 

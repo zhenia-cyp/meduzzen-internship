@@ -6,7 +6,7 @@ from app.services.authentication import AuthService
 from app.services.user import UserService
 from app.schemas.pagination import PagedResponseSchema, PageParams
 from app.schemas.schema import UserSignUpRequest, UserSchema, UserUpdateRequest, MyResponse, UserSignInRequest, \
-    UserDetails, UpdateUser
+    UserDetails
 from fastapi import HTTPException
 from fastapi.security import HTTPBearer
 

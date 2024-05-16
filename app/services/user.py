@@ -67,7 +67,7 @@ class UserService:
             await self.session.commit()
             return True
 
-    async def check_user_email(self,user:UserSignUpRequest):
+    async def check_user_email(self,user: UserSignUpRequest):
         stmt = select(User).where(User.email == user.email)
         result = await self.session.execute(stmt)
         exist = result.scalars().all()

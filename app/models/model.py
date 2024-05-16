@@ -94,5 +94,20 @@ class Request(Base):
             return f"Request: id: {self.id}, sender_id: {self.sender_id}, company_id: {self.company_id}, is_accepted: {self.is_accepted}"
 
 
+class Member(Base):
+    __tablename__ = "Member"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("User.id"))
+    role = Column(String)
+    company_id = Column(Integer, ForeignKey("Company.id"))
+
+    def __str__(self):
+        return f"Member: id: {self.id}, user_id: {self.user_id}, role: {self.role}, company_id: {self.company_id}"
+
+    def __repr__(self):
+        return f"Member: id: {self.id}, user_id: {self.user_id}, role: {self.role}, company_id: {self.company_id}"
+
+
 
 
