@@ -6,6 +6,7 @@ from app.routers.check_redis_connection import router as check_redis_connection_
 from app.core.config import settings
 from app.routers.user import router as user
 from app.routers.company import router as company
+from app.routers.action import router as action
 
 
 app = FastAPI()
@@ -14,6 +15,7 @@ app.include_router(check_db_connection_router)
 app.include_router(check_redis_connection_router)
 app.include_router(user)
 app.include_router(company)
+app.include_router(action)
 
 
 if __name__ == "__main__":

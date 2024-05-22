@@ -32,9 +32,12 @@ class EmailUpdateNotAllowed(HTTPException):
                          )
 
 class NotFoundException(HTTPException):
-    def __init__(self):
-        super().__init__(status_code=400,detail=f"Object with such ID not found")
-
+    def __init__(self,key=None):
+        if key is not None:
+            detail = f"Object {key} with such ID not found"
+        else:
+            detail = "Object with such ID not found"
+        super().__init__(status_code=400, detail=detail)
 
 
 class UpdateException(HTTPException):

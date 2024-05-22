@@ -61,3 +61,53 @@ class Company(Base):
 
     def __repr__(self):
         return f"Company: id: {self.id}, name: {self.name}, city: {self.city}"
+
+
+
+class Invitation(Base):
+    __tablename__ = "Invitation"
+
+    id = Column(Integer, primary_key=True)
+    sender_id = Column(Integer, ForeignKey("User.id"))
+    recipient_id = Column(Integer, ForeignKey("User.id"))
+    company_id = Column(Integer, ForeignKey("Company.id"))
+    is_accepted: bool = Column(Boolean, default=None)
+
+    def __str__(self):
+        return f"Invitation: id: {self.id}, sender_id: {self.sender_id}, recipient_id: {self.recipient_id}, is_accepted: {self.is_accepted}"
+    def __repr__(self):
+        return f"Invitation: id: {self.id}, sender_id: {self.sender_id}, recipient_id: {self.recipient_id}, is_accepted: {self.is_accepted}"
+
+
+
+class Request(Base):
+        __tablename__ = "Request"
+
+        id = Column(Integer, primary_key=True)
+        sender_id = Column(Integer, ForeignKey("User.id"))
+        company_id = Column(Integer, ForeignKey("Company.id"))
+        is_accepted: bool = Column(Boolean, default=None)
+
+        def __str__(self):
+            return f"Request: id: {self.id}, sender_id: {self.sender_id}, company_id: {self.company_id}, is_accepted: {self.is_accepted}"
+        def __repr__(self):
+            return f"Request: id: {self.id}, sender_id: {self.sender_id}, company_id: {self.company_id}, is_accepted: {self.is_accepted}"
+
+
+class Member(Base):
+    __tablename__ = "Member"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("User.id"))
+    role = Column(String)
+    company_id = Column(Integer, ForeignKey("Company.id"))
+
+    def __str__(self):
+        return f"Member: id: {self.id}, user_id: {self.user_id}, role: {self.role}, company_id: {self.company_id}"
+
+    def __repr__(self):
+        return f"Member: id: {self.id}, user_id: {self.user_id}, role: {self.role}, company_id: {self.company_id}"
+
+
+
+
