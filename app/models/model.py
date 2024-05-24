@@ -1,8 +1,7 @@
 
 from sqlalchemy import Column, Integer, String, Boolean,  ForeignKey, MetaData
 from sqlalchemy.orm import declarative_base, validates
-
-from app.utils.exceptions import EmailUpdateNotAllowed, UpdateException
+from app.utils.exceptions import UpdateException
 
 Base = declarative_base()
 metadata = MetaData()
@@ -63,7 +62,6 @@ class Company(Base):
         return f"Company: id: {self.id}, name: {self.name}, city: {self.city}"
 
 
-
 class Invitation(Base):
     __tablename__ = "Invitation"
 
@@ -74,24 +72,29 @@ class Invitation(Base):
     is_accepted: bool = Column(Boolean, default=None)
 
     def __str__(self):
-        return f"Invitation: id: {self.id}, sender_id: {self.sender_id}, recipient_id: {self.recipient_id}, is_accepted: {self.is_accepted}"
-    def __repr__(self):
-        return f"Invitation: id: {self.id}, sender_id: {self.sender_id}, recipient_id: {self.recipient_id}, is_accepted: {self.is_accepted}"
+        return (f"Invitation: id: {self.id}, sender_id: {self.sender_id}, "
+                f"recipient_id: {self.recipient_id}, is_accepted: {self.is_accepted}")
 
+    def __repr__(self):
+        return (f"Invitation: id: {self.id}, "
+                f"sender_id: {self.sender_id}, recipient_id: {self.recipient_id}, is_accepted: {self.is_accepted}")
 
 
 class Request(Base):
-        __tablename__ = "Request"
+    __tablename__ = "Request"
 
-        id = Column(Integer, primary_key=True)
-        sender_id = Column(Integer, ForeignKey("User.id"))
-        company_id = Column(Integer, ForeignKey("Company.id"))
-        is_accepted: bool = Column(Boolean, default=None)
+    id = Column(Integer, primary_key=True)
+    sender_id = Column(Integer, ForeignKey("User.id"))
+    company_id = Column(Integer, ForeignKey("Company.id"))
+    is_accepted: bool = Column(Boolean, default=None)
 
-        def __str__(self):
-            return f"Request: id: {self.id}, sender_id: {self.sender_id}, company_id: {self.company_id}, is_accepted: {self.is_accepted}"
-        def __repr__(self):
-            return f"Request: id: {self.id}, sender_id: {self.sender_id}, company_id: {self.company_id}, is_accepted: {self.is_accepted}"
+    def __str__(self):
+        return (f"Request: id: {self.id}, sender_id: {self.sender_id}, company_id: {self.company_id}, "
+                f"is_accepted: {self.is_accepted}")
+
+    def __repr__(self):
+        return (f"Request: id: {self.id}, sender_id: {self.sender_id}, "
+                f"company_id: {self.company_id}, is_accepted: {self.is_accepted}")
 
 
 class Member(Base):
@@ -107,7 +110,3 @@ class Member(Base):
 
     def __repr__(self):
         return f"Member: id: {self.id}, user_id: {self.user_id}, role: {self.role}, company_id: {self.company_id}"
-
-
-
-

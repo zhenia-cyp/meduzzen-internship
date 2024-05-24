@@ -4,6 +4,7 @@ from app.auth.token import create_access_token
 from app.core.config import settings
 import jwt
 
+
 @pytest.mark.anyio
 async def test_check(client):
     response = await client.get("/")

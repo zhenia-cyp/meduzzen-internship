@@ -49,3 +49,18 @@ class UpdateException(HTTPException):
 class CompanyAlreadyExistsException(HTTPException):
     def __init__(self, company_name: str):
         super().__init__(status_code=400, detail=f"Company with the name '{company_name}' already exists")
+
+
+class NoSuchMemberException(HTTPException):
+    def __init__(self):
+        super().__init__(status_code=400, detail="No such member in the company")
+
+
+class AlreadyAdminException(HTTPException):
+    def __init__(self):
+        super().__init__(status_code=400, detail="Member is already admin")
+
+
+class MemberNotAdminException(HTTPException):
+    def __init__(self):
+        super().__init__(status_code=400, detail="Member is not admin")

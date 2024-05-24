@@ -7,6 +7,7 @@ from app.utils.exceptions import CredentialsException
 import secrets
 from app.utils.utils import get_hash_password
 
+
 async def payload_auth(token, session):
     url = f"https://{settings.DOMAIN}/.well-known/jwks.json"
     jwks_client = PyJWKClient(url)
@@ -19,8 +20,7 @@ async def payload_auth(token, session):
     user = await user_service.get_user_by_email(email)
     if user is None:
         added_user = UserSignUpRequest(email=email, password=get_hash_password(secrets.token_urlsafe(15)),
-              firstname="string", lastname="string", is_active=True, is_superuser=False)
+                                       firstname="string", lastname="string", is_active=True, is_superuser=False)
         user = await user_service.add_user(added_user)
         return user
     return user
-

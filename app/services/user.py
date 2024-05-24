@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Optional
 from sqlalchemy import select, update, delete
 from sqlalchemy.exc import SQLAlchemyError
 from app.models.model import User
@@ -67,7 +67,7 @@ class UserService:
             await self.session.commit()
             return True
 
-    async def check_user_email(self,user: UserSignUpRequest):
+    async def check_user_email(self, user: UserSignUpRequest):
         stmt = select(User).where(User.email == user.email)
         result = await self.session.execute(stmt)
         exist = result.scalars().all()
@@ -86,7 +86,7 @@ class UserService:
             return None
 
 
-    async def partially_user_update(self, user,update):
+    async def partially_user_update(self, user, update):
         data = update.dict(exclude={'updated_at'})
         current_user = await self.get_user_by_email(user.email)
         current_user.firstname = data['firstname']
