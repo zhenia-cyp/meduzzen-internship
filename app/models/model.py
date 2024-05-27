@@ -69,7 +69,7 @@ class Invitation(Base):
     sender_id = Column(Integer, ForeignKey("User.id"))
     recipient_id = Column(Integer, ForeignKey("User.id"))
     company_id = Column(Integer, ForeignKey("Company.id"))
-    is_accepted: bool = Column(Boolean, default=None)
+    is_accepted: bool = Column(Boolean, default=False)
 
     def __str__(self):
         return (f"Invitation: id: {self.id}, sender_id: {self.sender_id}, "
@@ -86,7 +86,7 @@ class Request(Base):
     id = Column(Integer, primary_key=True)
     sender_id = Column(Integer, ForeignKey("User.id"))
     company_id = Column(Integer, ForeignKey("Company.id"))
-    is_accepted: bool = Column(Boolean, default=None)
+    is_accepted: bool = Column(Boolean, default=False)
 
     def __str__(self):
         return (f"Request: id: {self.id}, sender_id: {self.sender_id}, company_id: {self.company_id}, "

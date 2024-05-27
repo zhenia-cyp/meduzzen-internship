@@ -1,7 +1,7 @@
 import logging
 from sqlalchemy import select, delete
 from app.models.model import User, Invitation, Request, Member, Company
-from app.schemas.action import UserActionCreate
+from app.schemas.action import UserActionCreate, Role
 from app.utils.pagination import Pagination
 from app.utils.validation import ActionsValidator
 from app.utils.exceptions import NotFoundException
@@ -22,7 +22,7 @@ class UserActionsService:
         invitation.is_accepted = True
         await self.session.commit()
         await self.session.refresh(invitation)
-        member = Member(user_id=current_user.id, role="member", company_id=company.id)
+        member = Member(user_id=current_user.id, role=Role.Member, company_id=company.id)
         self.session.add(member)
         await self.session.commit()
         await self.session.refresh(member)
@@ -33,7 +33,7 @@ class UserActionsService:
         await validator.user_action_validation(action, current_user, invitation_id)
         stmt = select(Invitation).filter_by(id=invitation_id, recipient_id=current_user.id,
                                             company_id=action.company_id,
-                                            is_accepted=None)
+                                            is_accepted=False)
         result = await self.session.execute(stmt)
         invitation = result.scalar_one()
         invitation.is_accepted = False
@@ -45,7 +45,7 @@ class UserActionsService:
         validator = ActionsValidator(self.session)
         company = await validator.user_action_validation(action, current_user)
         await validator.check_user_request(current_user, company)
-        request = Request(sender_id=current_user.id, company_id=company.id, is_accepted=None)
+        request = Request(sender_id=current_user.id, company_id=company.id, is_accepted=False)
         self.session.add(request)
         await self.session.commit()
         await self.session.refresh(request)

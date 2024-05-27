@@ -68,3 +68,8 @@ class MemberSchema(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class Role(StrEnum):
+    Admin = "admin"
+    Member = "member"

@@ -56,7 +56,7 @@ class NoSuchMemberException(HTTPException):
         super().__init__(status_code=400, detail="No such member in the company")
 
 
-class AlreadyAdminException(HTTPException):
+class AlreadyAdminException(Exception):
     def __init__(self):
         super().__init__(status_code=400, detail="Member is already admin")
 
