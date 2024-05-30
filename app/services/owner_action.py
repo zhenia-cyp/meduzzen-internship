@@ -17,7 +17,7 @@ class OwnerActionsService:
     async def add_member(self, action: OwnerActionCreate, company: Company) -> Member:
         validator = ActionsValidator(self.session)
         await validator.user_is_not_member(action.recipient_id, company.id)
-        member = Member(user_id=action.recipient_id, role=Role.Member, company_id=company.id)
+        member = Member(user_id=action.recipient_id, role=Role.MEMBER, company_id=company.id)
         self.session.add(member)
         await self.session.commit()
         await self.session.refresh(member)
@@ -132,7 +132,7 @@ class OwnerActionsService:
         result = await self.session.execute(stmt)
         member = result.scalar_one()
         await validator.member_is_not_admin(member)
-        member.role = Role.Admin
+        member.role = Role.ADMIN
         await self.session.commit()
         await self.session.refresh(member)
         return member

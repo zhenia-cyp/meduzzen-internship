@@ -4,7 +4,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from app.models.model import User
 from app.schemas.pagination import PageParams, PagedResponseSchema
 from app.schemas.schema import UserSignUpRequest, UserSchema, UserUpdateRequest, UserSignInRequest, UserDetails
-from app.utils.exceptions import EmailUpdateNotAllowed, NotFoundException
+from app.utils.exceptions import NotFoundException
 from app.utils.pagination import Pagination
 from app.utils.utils import get_hash_password
 import logging

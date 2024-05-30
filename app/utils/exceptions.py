@@ -1,66 +1,81 @@
-from fastapi import HTTPException
+class CustomTokenExceptionBase(Exception):
+    def init(self, detail: str):
+        self.detail = detail
 
-class CredentialsException(HTTPException):
-    def __init__(self):
-        super().__init__(
-            status_code=401,
-            detail="Could not validate credentials",
-            headers={"WWW-Authenticate": "Bearer"}
-        )
-
-class TokenExpiredException(HTTPException):
-    def __init__(self):
-        super().__init__(
-            status_code=401,
-            detail="Token has expired",
-            headers={"WWW-Authenticate": "Bearer"}
-        )
-
-class TokenDecodingError(HTTPException):
-    def __init__(self ):
-        super().__init__(
-            status_code=401,
-            detail="Failed to decode the token",
-            headers={"WWW-Authenticate": "Bearer"}
-        )
+class CredentialsException(CustomTokenExceptionBase):
+    def __init__(self, detail: str):
+        self.detail = detail
+        super().__init__(self.detail)
 
 
-class EmailUpdateNotAllowed(HTTPException):
-    def __init__(self):
-        super().__init__(status_code=400,
-                         detail="Updating email is not allowed"
-                         )
+class TokenExpiredException(CustomTokenExceptionBase):
+    def __init__(self, detail: str):
+        self.detail = detail
+        super().__init__(detail)
 
-class NotFoundException(HTTPException):
-    def __init__(self,key=None):
+class TokenError(CustomTokenExceptionBase):
+    def __init__(self, detail: str):
+        self.detail = detail
+        super().__init__(detail)
+
+
+class NotFoundException(Exception):
+    def __init__(self, key=None):
         if key is not None:
-            detail = f"Object {key} with such ID not found"
+            self.message = f"Object {key} with such ID not found"
         else:
-            detail = "Object with such ID not found"
-        super().__init__(status_code=400, detail=detail)
+            self.message = "Object with such ID not found"
+        super().__init__(self.message)
 
 
-class UpdateException(HTTPException):
-    def __init__(self,key):
-        super().__init__(status_code=400,detail=f"Update {key} is not allowed!")
+class UpdateException(Exception):
+    def __init__(self, key):
+        self.message = f"Update {key} is not allowed!"
+        super().__init__(self.message)
 
 
 
-class CompanyAlreadyExistsException(HTTPException):
+class CompanyAlreadyExistsException(Exception):
     def __init__(self, company_name: str):
-        super().__init__(status_code=400, detail=f"Company with the name '{company_name}' already exists")
+        self.message = f"Company with the name '{company_name}' already exists"
+        super().__init__(self.message)
 
 
-class NoSuchMemberException(HTTPException):
-    def __init__(self):
-        super().__init__(status_code=400, detail="No such member in the company")
-
+class NoSuchMemberException(Exception):
+    def __init__(self, message="No such member in the company"):
+        self.message = message
+        super().__init__(self.message)
 
 class AlreadyAdminException(Exception):
-    def __init__(self):
-        super().__init__(status_code=400, detail="Member is already admin")
+    def __init__(self, message="Member is already admin"):
+        self.message = message
+        super().__init__(self.message)
 
 
-class MemberNotAdminException(HTTPException):
-    def __init__(self):
-        super().__init__(status_code=400, detail="Member is not admin")
+class MemberNotAdminException(Exception):
+    def __init__(self, message="Member is not admin"):
+        self.message = message
+        super().__init__(self.message)
+
+
+class PermissionDeniedException(Exception):
+    def __init__(self, key=None):
+        if key is not None:
+            self.message = f"{key} is owner of a company"
+        else:
+            self.message = "Not enough permissions"
+            super().__init__(self.message)
+
+
+class RequestMemberInvitationException(Exception):
+    def __init__(self, key):
+        self.key = key
+        if key == "request":
+            self.message = "Request already sent"
+        elif key == "member":
+            self.message = "User is already a member"
+        elif key == "invitation":
+            self.message = "Invitation already sent"
+        super().__init__(self.message)
+
+

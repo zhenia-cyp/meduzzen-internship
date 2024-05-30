@@ -17,12 +17,12 @@ async def payload(token, session):
     payload = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.ALGORITHM])
     exp = payload.get('exp')
     if exp is not None and datetime.utcfromtimestamp(exp) < datetime.utcnow():
-        raise TokenExpiredException()
+        raise TokenExpiredException("Token has expired")
     email = payload.get("sub")
     if email is None:
-        raise CredentialsException()
+        raise CredentialsException("Could not validate credentials")
     user_service = UserService(session)
     user = await user_service.get_user_by_email(email)
     if user is None:
-        raise CredentialsException()
+        raise CredentialsException("Could not validate credentials")
     return user

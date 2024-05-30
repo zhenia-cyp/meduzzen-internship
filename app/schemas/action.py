@@ -71,5 +71,5 @@ class MemberSchema(BaseModel):
 
 
 class Role(StrEnum):
-    Admin = "admin"
-    Member = "member"
+    ADMIN = "admin"
+    MEMBER = "member"

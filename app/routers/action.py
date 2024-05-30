@@ -9,7 +9,8 @@ from app.services.owner_action import OwnerActionsService
 from app.services.user import UserService
 from app.services.user_action import UserActionsService
 from app.schemas.pagination import PagedResponseSchema, PageParams
-from app.utils.exceptions import NoSuchMemberException
+from app.utils.exceptions import NoSuchMemberException, CustomTokenExceptionBase
+
 
 router = APIRouter()
 token_auth_scheme = HTTPBearer()
@@ -203,7 +204,10 @@ async def company_users(company_id: int, session: AsyncSession = Depends(get_asy
                         token: str = Depends(token_auth_scheme),
                         page_params: PageParams = Depends(PageParams)):
     auth_service = AuthService(session)
-    user = await auth_service.get_user_by_token(token, session)
+    try:
+        user = await auth_service.get_user_by_token(token, session)
+    except CustomTokenExceptionBase as e:
+        raise e
     user_service = UserService(session)
     user = await user_service.get_user_by_email(user.email)
     current_user = await user_service.get_user_by_id(user.id)
@@ -223,8 +227,6 @@ async def owner_create_admin(user_id: int, action: OwnerActionCreate,
     current_user = await user_service.get_user_by_id(user.id)
     owner_actions_service = OwnerActionsService(session)
     member = await owner_actions_service.add_admin_role(user_id, action, current_user)
-    if not member:
-        NoSuchMemberException()
     return member
 
 

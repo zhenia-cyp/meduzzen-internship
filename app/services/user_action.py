@@ -22,7 +22,7 @@ class UserActionsService:
         invitation.is_accepted = True
         await self.session.commit()
         await self.session.refresh(invitation)
-        member = Member(user_id=current_user.id, role=Role.Member, company_id=company.id)
+        member = Member(user_id=current_user.id, role=Role.MEMBER, company_id=company.id)
         self.session.add(member)
         await self.session.commit()
         await self.session.refresh(member)

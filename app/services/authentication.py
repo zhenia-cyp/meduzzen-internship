@@ -4,7 +4,7 @@ from app.auth.token import create_access_token, payload
 from app.schemas.authentication import Token
 from app.schemas.schema import UserDetails
 from fastapi.security import HTTPAuthorizationCredentials
-from app.utils.exceptions import TokenDecodingError
+from app.utils.exceptions import TokenError
 from app.utils.utils import verify_password
 
 
@@ -31,4 +31,4 @@ class AuthService:
             return UserDetails.from_orm(user)
         except Exception as e:
             self.logger.error(f" {str(e)}")
-            raise TokenDecodingError()
+            raise TokenError("Failed to decode the token")
