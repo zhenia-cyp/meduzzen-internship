@@ -21,6 +21,8 @@ class OwnerActions(StrEnum):
     Accept_request = "Accept_request"
     Deny_request = "Deny_request"
     Delete_member = "Delete_member"
+    Add_admin = "Add_admin"
+    Remove_admin = "Remove_admin"
 
 
 class OwnerActionCreate(BaseModel):
@@ -37,7 +39,7 @@ class UserActions(StrEnum):
     Deny_invitation = "Deny_invitation"
     Send_request = "Send_request"
     Deny_request = "Deny_request"
-    Leave_company= "Leave_company"
+    Leave_company = "Leave_company"
 
 
 class UserActionCreate(BaseModel):
@@ -67,3 +69,7 @@ class MemberSchema(BaseModel):
     class Config:
         from_attributes = True
 
+
+class Role(StrEnum):
+    ADMIN = "admin"
+    MEMBER = "member"

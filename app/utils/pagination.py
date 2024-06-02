@@ -4,6 +4,7 @@ from sqlalchemy import select
 
 T = TypeVar('T')
 
+
 class Pagination:
     def __init__(self, model, session, page_params: PageParams, items: Optional[List[T]] = None):
         self.model = model
@@ -14,8 +15,7 @@ class Pagination:
         self.offset = self.page * page_params.size
         self.limit = page_params.size
 
-
-    async def get_pagination(self ) -> PagedResponseSchema:
+    async def get_pagination(self) -> PagedResponseSchema:
         if self.items is not None:
             total = len(self.items)
             paginated_items = self.items[self.offset:self.offset + self.limit]
@@ -34,5 +34,4 @@ class Pagination:
             total=total,
             page=self.page_params.page,
             size=self.page_params.size,
-            result=items
-        )
+            result=items)

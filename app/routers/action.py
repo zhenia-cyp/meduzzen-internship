@@ -9,6 +9,7 @@ from app.services.owner_action import OwnerActionsService
 from app.services.user import UserService
 from app.services.user_action import UserActionsService
 from app.schemas.pagination import PagedResponseSchema, PageParams
+from app.utils.exceptions import NoSuchMemberException, CustomTokenExceptionBase
 
 
 router = APIRouter()
@@ -113,13 +114,16 @@ async def owner_accept_request(request_id: int, action: OwnerActionCreate,
 
 
 @router.post("/owner/deny/{request_id}/", response_model=RequestSchema)
-async def owner_accept_request(request_id: int, action: OwnerActionCreate,
-                               session: AsyncSession = Depends(get_async_session),
-                               token: str = Depends(token_auth_scheme)):
+async def owner_deny_request(request_id: int, action: OwnerActionCreate,
+                             session: AsyncSession = Depends(get_async_session),
+                             token: str = Depends(token_auth_scheme)):
     auth_service = AuthService(session)
-    await auth_service.get_user_by_token(token, session)
+    user = await auth_service.get_user_by_token(token, session)
+    user_service = UserService(session)
+    user = await user_service.get_user_by_email(user.email)
+    current_user = await user_service.get_user_by_id(user.id)
     owner_actions_service = OwnerActionsService(session)
-    request = await owner_actions_service.deny_request(action, request_id, invitation_id=None, current_user=None)
+    request = await owner_actions_service.deny_request(action, current_user, request_id)
     return request
 
 
@@ -140,9 +144,9 @@ async def user_leave_company(user_id: int, action: UserActionCreate,
 
 
 @router.get("/get/all/requests/", response_model=PagedResponseSchema[RequestSchema])
-async def all_requests_by_user(session: AsyncSession = Depends(get_async_session),
-                               token: str = Depends(token_auth_scheme),
-                               page_params: PageParams = Depends(PageParams)):
+async def all_requests(session: AsyncSession = Depends(get_async_session),
+                       token: str = Depends(token_auth_scheme),
+                       page_params: PageParams = Depends(PageParams)):
     auth_service = AuthService(session)
     user = await auth_service.get_user_by_token(token, session)
     user_service = UserService(session)
@@ -154,9 +158,9 @@ async def all_requests_by_user(session: AsyncSession = Depends(get_async_session
 
 
 @router.get("/user/get/all/invites/", response_model=PagedResponseSchema[RequestSchema])
-async def all_requests_by_user(session: AsyncSession = Depends(get_async_session),
-                               token: str = Depends(token_auth_scheme),
-                               page_params: PageParams = Depends(PageParams)):
+async def all_invites_by_user(session: AsyncSession = Depends(get_async_session),
+                              token: str = Depends(token_auth_scheme),
+                              page_params: PageParams = Depends(PageParams)):
     auth_service = AuthService(session)
     user = await auth_service.get_user_by_token(token, session)
     user_service = UserService(session)
@@ -200,10 +204,57 @@ async def company_users(company_id: int, session: AsyncSession = Depends(get_asy
                         token: str = Depends(token_auth_scheme),
                         page_params: PageParams = Depends(PageParams)):
     auth_service = AuthService(session)
-    user = await auth_service.get_user_by_token(token, session)
+    try:
+        user = await auth_service.get_user_by_token(token, session)
+    except CustomTokenExceptionBase as e:
+        raise e
     user_service = UserService(session)
     user = await user_service.get_user_by_email(user.email)
     current_user = await user_service.get_user_by_id(user.id)
     owner_actions_service = OwnerActionsService(session)
     members = await owner_actions_service.company_users(company_id, current_user, page_params)
     return members
+
+
+@router.post("/create/admin/{user_id}/", response_model=MemberSchema)
+async def owner_create_admin(user_id: int, action: OwnerActionCreate,
+                             session: AsyncSession = Depends(get_async_session),
+                             token: str = Depends(token_auth_scheme)):
+    auth_service = AuthService(session)
+    user = await auth_service.get_user_by_token(token, session)
+    user_service = UserService(session)
+    user = await user_service.get_user_by_email(user.email)
+    current_user = await user_service.get_user_by_id(user.id)
+    owner_actions_service = OwnerActionsService(session)
+    member = await owner_actions_service.add_admin_role(user_id, action, current_user)
+    return member
+
+
+@router.post("/delete/admin/role/{user_id}/", response_model=MyResponse)
+async def owner_delete_admin(user_id: int, action: OwnerActionCreate,
+                             session: AsyncSession = Depends(get_async_session),
+                             token: str = Depends(token_auth_scheme)):
+    auth_service = AuthService(session)
+    user = await auth_service.get_user_by_token(token, session)
+    user_service = UserService(session)
+    user = await user_service.get_user_by_email(user.email)
+    current_user = await user_service.get_user_by_id(user.id)
+    owner_actions_service = OwnerActionsService(session)
+    result = await owner_actions_service.remove_admin_role(user_id, action, current_user)
+    if not result:
+        NoSuchMemberException()
+    return MyResponse(status_code="200", message="Delete admin role", result=result)
+
+
+@router.post("/get/company/admins/{company_id}/", response_model=PagedResponseSchema[MemberSchema])
+async def owner_get_admins(company_id: int, session: AsyncSession = Depends(get_async_session),
+                           token: str = Depends(token_auth_scheme),
+                           page_params: PageParams = Depends(PageParams)):
+    auth_service = AuthService(session)
+    user = await auth_service.get_user_by_token(token, session)
+    user_service = UserService(session)
+    user = await user_service.get_user_by_email(user.email)
+    current_user = await user_service.get_user_by_id(user.id)
+    owner_actions_service = OwnerActionsService(session)
+    admins = await owner_actions_service.get_admins(company_id, current_user, page_params)
+    return admins
